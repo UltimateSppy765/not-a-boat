@@ -38,7 +38,6 @@ class SomeBot(commands.Bot):
             ),
             allowed_mentions=discord.AllowedMentions(everyone=False, roles=False),
         )
-        self.initiated = False
         self.logger = setuplogger("BoatBot", 10)
         self.extcache = extlist["extension_list"]
         self.logger.debug(
@@ -46,23 +45,23 @@ class SomeBot(commands.Bot):
         )
 
     async def on_ready(self) -> None:
-        if not self.initiated:
-            self.start_time = discord.utils.utcnow()
-            self.logger.debug("No Persistent Views added, adding Persistent Views.")
-            for i in perviews():
-                self.add_view(i)
-            self.persistent_views_added = True
-            self.logger.debug(
-                "Added %s view%s: %s",
-                len(self.persistent_views),
-                "" if len(self.persistent_views) == 1 else "s",
-                self.persistent_views,
-            )
-            # Prevent gateway disconnect in case extensions make API calls.
-            await asyncio.sleep(2)
-            await load_on_start(self)
+        self.start_time = discord.utils.utcnow()
         self.logger.info("Gateway connection is ready.")
         self.logger.info("Logged in as %s - %s", self.user, self.user.id)
+
+    # Runs after login(), before on_ready()
+    async def setup_hook(self) -> None:
+        self.logger.debug("No Persistent Views added, adding Persistent Views.")
+        for i in perviews():
+            self.add_view(i)
+        self.persistent_views_added = True
+        self.logger.debug(
+            "Added %s view%s: %s",
+            len(self.persistent_views),
+            "" if len(self.persistent_views) == 1 else "s",
+            self.persistent_views,
+        )
+        await load_on_start(self)
 
 
 client = SomeBot()
