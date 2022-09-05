@@ -1,4 +1,5 @@
 import os
+
 from google.cloud import dialogflow
 
 projectid = os.environ["GCP_PROJECT_ID"]
