@@ -4,6 +4,7 @@ import os
 from time import perf_counter
 
 import discord
+import firebase_admin
 from discord import app_commands
 from discord.ext import commands
 from firebase_admin import credentials, firestore_async
