@@ -3,9 +3,7 @@ import os
 import traceback
 
 import discord
-import firebase_admin
 from discord.ext import commands, tasks
-from firebase_admin import credentials, firestore_async
 from imports.modules.gpapi.googleplay import GooglePlayAPI
 
 api = GooglePlayAPI(locale="en_IN", timezone="UTC", device_codename="walleye")
