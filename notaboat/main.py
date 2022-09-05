@@ -63,7 +63,8 @@ class SomeBot(commands.Bot):
         extsnapshot = await self.dbclient.collection("stuff").document("extlist").get()
         self.extcache = extsnapshot.to_dict()
         self.logger.debug(
-            "Cached %s extensions from configured Firestore document.", len(self.extcache)
+            "Cached %s extensions from configured Firestore document.",
+            len(self.extcache),
         )
         await load_on_start(self)
 
