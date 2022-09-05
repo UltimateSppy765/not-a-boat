@@ -1,0 +1,24 @@
+{
+    "extension_list": {
+        "imports.extensions.Miscellaneous": {
+            "nick": "Miscellaneous",
+            "description": "Miscellaneous commands.",
+            "load_on_start": true
+        },
+        "imports.extensions.Dialog": {
+            "nick": "Dialogflow Stuff",
+            "description": "Commands and stuffs related to Dialogflow.",
+            "load_on_start": false
+        },
+        "imports.extensions.ActivityInvite": {
+            "nick": "Activity Invites",
+            "description": "Commands to create invites to activties in voice channels.",
+            "load_on_start": false
+        },
+        "imports.extensions.GPlayScraper": {
+            "nick": "Discord Version Scraper",
+            "description": "Discord Android App Version Scanner.",
+            "load_on_start": true
+        }
+    }
+}

@@ -1,0 +1,131 @@
+import json
+import os
+import traceback
+
+import discord
+import firebase_admin
+from discord.ext import commands, tasks
+from firebase_admin import credentials, firestore_async
+from imports.modules.gpapi.googleplay import GooglePlayAPI
+
+api = GooglePlayAPI(locale="en_IN", timezone="UTC", device_codename="walleye")
+try:
+    api.login(gsfId=int(os.environ["GSFID"]), authSubToken=os.environ["AUTHSUBTOKEN"])
+except Exception:
+    api = None
+    err = traceback.format_exc()
+
+
+class PlayButton(discord.ui.View):
+    def __init__(self) -> None:
+        super().__init__()
+        self.add_item(
+            discord.ui.Button(
+                label="Open in Play Store",
+                url="https://play.google.com/store/apps/details?id=com.discord",
+                emoji=discord.PartialEmoji(name="play_logo", id=1013122972514537473),
+            )
+        )
+
+
+class GPlayScraper(commands.Cog):
+    """Discord Android App Version Scanner."""
+
+    def __init__(self, client: commands.Bot) -> None:
+        self.client = client
+        self.lechannel = self.client.get_channel(1012472180119974069)
+
+    async def cog_load(self) -> None:
+        if not api:
+            self.client.logger.warning(
+                "There was an error while logging in to the Play API."
+            )
+            embedd = discord.Embed(
+                timestamp=discord.utils.utcnow(),
+                color=0xED4245,
+                title="⚠️ Aborting loop start. There were errors while logging in to the Play API:",
+                description=f"```{err}\n```",
+            )
+            embedd.set_footer(
+                text="Alpha Update Notifications",
+                icon_url="https://static.wikia.nocookie.net/discord/images/4/47/Discord_Canary.png/revision/latest",
+            )
+            await self.lechannel.send(
+                content=" ".join([f"<@{i}>" for i in self.client.owner_ids]),
+                embed=embedd,
+            )
+            return
+        self.gplayapi = api
+        self.dbapp = firebase_admin.initialize_app(
+            credentials.Certificate(json.loads(os.environ["FDBCREDS"]))
+        )
+        self.db = firestore_async.client()
+        versiondoc = await self.db.collection("stuff").document("version").get()
+        self.lastdiscordver = versiondoc.get("lastdiscordver")
+        self.redirectview = PlayButton()
+        self.discordverscraper.start()
+
+    async def cog_unload(self) -> None:
+        if api:
+            self.discordverscraper.cancel()
+            firebase_admin.delete_app(self.dbapp)
+
+    @tasks.loop(minutes=2)
+    async def discordverscraper(self) -> None:
+        try:
+            appdetails = self.gplayapi.details("com.discord")
+        except Exception:
+            embedd = discord.Embed(
+                timestamp=discord.utils.utcnow(),
+                color=0xED4245,
+                title="⚠️ Stopping loop. There were errors while fetching app details:",
+                description=f"```{traceback.format_exc()}\n```",
+            )
+            embedd.set_footer(
+                text="Alpha Update Notifications",
+                icon_url="https://static.wikia.nocookie.net/discord/images/4/47/Discord_Canary.png/revision/latest",
+            )
+            await self.lechannel.send(
+                content=" ".join([f"<@{i}>" for i in self.client.owner_ids]),
+                embed=embedd,
+            )
+            self.discordverscraper.cancel()
+        else:
+            embedd = discord.Embed(
+                timestamp=discord.utils.utcnow(),
+                color=0x5865F2,
+                title=appdetails["title"],
+                description=f"**Version:** {appdetails['details']['appDetails']['versionString']} ({appdetails['details']['appDetails']['versionCode']})",
+            )
+            embedd.set_footer(
+                text="Alpha Update Notifications",
+                icon_url="https://static.wikia.nocookie.net/discord/images/4/47/Discord_Canary.png/revision/latest",
+            )
+            embedd.set_image(url=appdetails["image"][0]["imageUrl"])
+            embedd.set_thumbnail(url=appdetails["image"][1]["imageUrl"])
+            embedd.add_field(
+                name="Last Version Code Stored:", value=str(self.lastdiscordver)
+            )
+            if appdetails["details"]["appDetails"]["versionCode"] > self.lastdiscordver:
+                msg = await self.lechannel.send(
+                    content="<@&1012474340345917440> New Discord version out on Play Store!",
+                    embed=embedd,
+                    view=self.redirectview,
+                    allowed_mentions=discord.AllowedMentions(roles=True),
+                )
+                await self.db.collection("stuff").document("version").set(
+                    {
+                        "lastdiscordver": appdetails["details"]["appDetails"][
+                            "versionCode"
+                        ]
+                    }
+                )
+                await msg.create_thread(
+                    name=f"Discord {appdetails['details']['appDetails']['versionString']}",
+                    reason=f"Android Discord Update ({appdetails['details']['appDetails']['versionCode']}) Thread",
+                )
+                self.lastdiscordver = appdetails["details"]["appDetails"]["versionCode"]
+
+
+async def setup(client: commands.Bot) -> None:
+    await client.add_cog(GPlayScraper(client))

@@ -1,0 +1,5 @@
+discord.py[speed]
+google-cloud-dialogflow
+requests==2.23.0
+cryptography
+firebase-admin
