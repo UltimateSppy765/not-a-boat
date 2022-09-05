@@ -6,7 +6,6 @@ from time import perf_counter
 import discord
 from discord import app_commands
 from discord.ext import commands
-# from aiohttp import ClientSession
 from imports.modules import itrchecks
 from imports.modules.persistentviews import perviews
 from imports.modules.setuplogger import setuplogger
@@ -23,6 +22,8 @@ discord.utils.setup_logging(root=False)
 
 with open("notaboat/extensions.json") as file:
     extlist = json.load(file)
+
+
 # Subclass commands.Bot to allow for stuff like persistent views
 class SomeBot(commands.Bot):
     def __init__(self) -> None:
@@ -263,7 +264,9 @@ async def load_or_fail(client: commands.Bot, extension: str) -> str | None:
                 )
             case "ExtensionFailed":
                 client.logger.error(
-                    'Extension "%s" ran into an error while loading:', e.name, exc_info=1
+                    'Extension "%s" ran into an error while loading:',
+                    e.name,
+                    exc_info=1,
                 )
     else:
         return extension

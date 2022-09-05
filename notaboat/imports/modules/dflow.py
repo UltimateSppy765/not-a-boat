@@ -12,4 +12,4 @@ async def intent_reply(session_id, text):
     query_input = dialogflow.QueryInput(text=text_input)
     return await session_client.detect_intent(
         request={"session": session, "query_input": query_input}
-)
+    )
