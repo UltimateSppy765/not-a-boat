@@ -1,8 +1,9 @@
 import time
 
 import discord
-from discord.ext import commands
 from discord import app_commands, utils
+from discord.ext import commands
+
 from ..modules.persistentviews import NerdStats
 
 
