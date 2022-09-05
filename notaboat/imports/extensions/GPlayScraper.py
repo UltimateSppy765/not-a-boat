@@ -98,7 +98,7 @@ class GPlayScraper(commands.Cog):
                 description=(
                     f"**Version:** {appdetails['details']['appDetails']['versionString']} "
                     f"({appdetails['details']['appDetails']['versionCode']})"
-                )
+                ),
             )
             embedd.set_footer(
                 text="Alpha Update Notifications",
