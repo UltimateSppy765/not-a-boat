@@ -1,4 +1,3 @@
-import json
 import os
 import traceback
 
@@ -54,7 +53,9 @@ class GPlayScraper(commands.Cog):
             )
             return
         self.gplayapi = api
-        versiondoc = await self.client.dbclient.collection("stuff").document("version").get()
+        versiondoc = (
+            await self.client.dbclient.collection("stuff").document("version").get()
+        )
         self.lastdiscordver = versiondoc.get("lastdiscordver")
         self.redirectview = PlayButton()
         self.discordverscraper.start()
