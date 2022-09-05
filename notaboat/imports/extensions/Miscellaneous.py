@@ -21,7 +21,10 @@ class Miscellaneous(commands.Cog):
         embedd = discord.Embed(
             timestamp=utils.utcnow(),
             colour=7644339,
-            description=f":spider_web: REST Latency: `{round(diff*1000)}ms`\n:ping_pong: Websocket Latency: `{round(interaction.client.latency*1000)}ms`",
+            description=(
+                f":spider_web: REST Latency: `{round(diff*1000)}ms`\n"
+                f":ping_pong: Websocket Latency: `{round(interaction.client.latency*1000)}ms`"
+            ),
         )
         embedd.set_author(
             name=interaction.client.user.name,
