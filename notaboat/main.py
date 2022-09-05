@@ -251,19 +251,24 @@ async def load_or_fail(client: commands.Bot, extension: str) -> str | None:
     try:
         await client.load_extension(extension)
     except (
-        commands.ExtensionNotFound, commands.ExtensionFailed, commands.NoEntryPointError
-        ) as e:
+        commands.ExtensionNotFound,
+        commands.ExtensionFailed,
+        commands.NoEntryPointError,
+    ) as e:
         match e.__class__.__name__:
             case "ExtensionNotFound":
-                client.logger.warning("Extension \"%s\" was not found.", e.name)
+                client.logger.warning('Extension "%s" was not found.', e.name)
             case "NoEntryPointError":
-                client.logger.warning("Extension \"%s\" does not have a setup function.", e.name)
+                client.logger.warning(
+                    'Extension "%s" does not have a setup function.', e.name
+                )
             case "ExtensionFailed":
                 client.logger.error(
-                    "Extension %s ran into an error while loading:", e.name, exc_info=1
+                    'Extension "%s" ran into an error while loading:', e.name, exc_info=1
                 )
     else:
         return extension
+
 
 async def load_on_start(client: commands.Bot) -> None:
     client.logger.debug("Loading startup extensions.")
