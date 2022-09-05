@@ -1,9 +1,8 @@
 import platform
+from sys import version
+from time import perf_counter
 
 import discord
-
-from time import perf_counter
-from sys import version
 
 
 def perviews() -> list[discord.ui.View]:
