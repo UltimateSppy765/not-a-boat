@@ -25,7 +25,14 @@ class NerdStats(discord.ui.View):
         embedd = discord.Embed(
             timestamp=discord.utils.utcnow(),
             colour=7644339,
-            description=f":nut_and_bolt: **Codebase:** Python\n<:python:596577462335307777> **Language Version:** Python {version}\n<:dpy:596577034537402378> **Discord API Library:** discord.py [v{discord.__version__}](https://github.com/Rapptz/discord.py/tree/v{discord.__version__})\n:clock10: **Running since:** {discord.utils.format_dt(interaction.client.start_time, 'R')}\n:gear: **Operating System:** {platform.platform(terse=True)}",
+            description=(
+                ":nut_and_bolt: **Codebase:** Python\n"
+                f"<:python:596577462335307777> **Language Version:** Python {version}\n"
+                f"<:dpy:596577034537402378> **Discord API Library:** discord.py [v{discord.__version__}]"
+                f"(https://github.com/Rapptz/discord.py/tree/v{discord.__version__})\n"
+                f":clock10: **Running since:** {discord.utils.format_dt(interaction.client.start_time, 'R')}\n"
+                f":gear: **Operating System:** {platform.platform(terse=True)}"
+            ),
         )
         embedd.set_author(
             name=interaction.client.user.name,
@@ -53,7 +60,10 @@ class NoNerdStats(discord.ui.View):
         embedd = discord.Embed(
             timestamp=discord.utils.utcnow(),
             colour=7644339,
-            description=f":spider_web: REST Latency: `{round(diff*1000)}ms`\n:ping_pong: Websocket Latency: `{round(interaction.client.latency*1000)}ms`",
+            description=(
+                f":spider_web: REST Latency: `{round(diff*1000)}ms`\n"
+                f":ping_pong: Websocket Latency: `{round(interaction.client.latency*1000)}ms`"
+            ),
         )
         embedd.set_author(
             name=interaction.client.user.name,
