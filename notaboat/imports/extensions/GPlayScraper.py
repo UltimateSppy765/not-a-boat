@@ -56,11 +56,7 @@ class GPlayScraper(commands.Cog):
             )
             return
         self.gplayapi = api
-        self.dbapp = firebase_admin.initialize_app(
-            credentials.Certificate(json.loads(os.environ["FDBCREDS"]))
-        )
-        self.db = firestore_async.client()
-        versiondoc = await self.db.collection("stuff").document("version").get()
+        versiondoc = await self.client.dbclient.collection("stuff").document("version").get()
         self.lastdiscordver = versiondoc.get("lastdiscordver")
         self.redirectview = PlayButton()
         self.discordverscraper.start()
@@ -68,7 +64,6 @@ class GPlayScraper(commands.Cog):
     async def cog_unload(self) -> None:
         if api:
             self.discordverscraper.cancel()
-            firebase_admin.delete_app(self.dbapp)
 
     @tasks.loop(minutes=2)
     async def discordverscraper(self) -> None:
@@ -116,7 +111,7 @@ class GPlayScraper(commands.Cog):
                     view=self.redirectview,
                     allowed_mentions=discord.AllowedMentions(roles=True),
                 )
-                await self.db.collection("stuff").document("version").set(
+                await self.client.dbclient.collection("stuff").document("version").set(
                     {
                         "lastdiscordver": appdetails["details"]["appDetails"][
                             "versionCode"
