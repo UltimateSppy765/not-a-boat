@@ -37,10 +37,10 @@ class SomeBot(commands.Bot):
             allowed_mentions=discord.AllowedMentions(everyone=False, roles=False),
         )
         self.logger = setuplogger("BoatBot", 10)
-        #self.dbapp = firebase_admin.initialize_app(
-            #credentials.Certificate(json.loads(os.environ["FDBCREDS"]))
-        #)
-        self.dbclient = firestore_async.client(credentials=credentials.Certificate(json.loads(os.environ["FDBCREDS"])))
+        self.dbapp = firebase_admin.initialize_app(
+            credentials.Certificate(json.loads(os.environ["FDBCREDS"]))
+        )
+        self.dbclient = firestore_async.client()
         self.logger.debug("Initialised Firestore Async Client.")
 
     async def on_ready(self) -> None:
