@@ -23,6 +23,7 @@ intents.messages = True
 discord.utils.setup_logging(root=False)
 
 
+
 # Subclass commands.Bot to allow for stuff like persistent views
 class SomeBot(commands.Bot):
     def __init__(self) -> None:
