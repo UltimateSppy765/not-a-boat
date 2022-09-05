@@ -51,10 +51,9 @@ class SomeBot(commands.Bot):
 
     # Runs after login(), before on_ready()
     async def setup_hook(self) -> None:
-        self.logger.debug("No Persistent Views added, adding Persistent Views.")
+        self.logger.debug("Initialising Persistent Views...")
         for i in perviews():
             self.add_view(i)
-        self.persistent_views_added = True
         self.logger.debug(
             "Added %s view%s: %s",
             len(self.persistent_views),
