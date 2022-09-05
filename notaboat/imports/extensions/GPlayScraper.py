@@ -95,7 +95,10 @@ class GPlayScraper(commands.Cog):
                 timestamp=discord.utils.utcnow(),
                 color=0x5865F2,
                 title=appdetails["title"],
-                description=f"**Version:** {appdetails['details']['appDetails']['versionString']} ({appdetails['details']['appDetails']['versionCode']})",
+                description=(
+                    f"**Version:** {appdetails['details']['appDetails']['versionString']} "
+                    f"({appdetails['details']['appDetails']['versionCode']})"
+                )
             )
             embedd.set_footer(
                 text="Alpha Update Notifications",
