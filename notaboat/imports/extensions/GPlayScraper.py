@@ -34,15 +34,42 @@ class GPlayScraper(commands.Cog):
 
     async def cog_load(self) -> None:
         try:
-            await self.lechannel.send("ℹ️ If you see this message, then the channel cache is working properly.")
+            await self.lechannel.send(
+                embed=discord.Embed(
+                    description=f"ℹ️ Module `{self.__class__.__name__}` has been initiated.",
+                    color=3092791,
+                    timestamp=discord.utils.utcnow(),
+                )
+            )
         except Exception:
             self.ouichannel = False
-            async with self.client.httpsession.post("https://discord.com/api/v10/channels/1012472180119974069/messages", headers={"Authorization":f"Bot {os.environ['BOAT_TOKEN']}"}, json={"content":" ".join([f"<@{i}>" for i in self.client.owner_ids]), "embeds":[{"title":":x: There was an error caching the updates channel, unloading extension.","color":15548997,"timestamp":discord.utils.utcnow().isoformat(),"description":f"```\n{traceback.format_exc()}\n```"}]}) as response:
+            async with self.client.httpsession.post(
+                "https://discord.com/api/v10/channels/1012472180119974069/messages",
+                headers={"Authorization": f"Bot {os.environ['BOAT_TOKEN']}"},
+                json={
+                    "content": " ".join([f"<@{i}>" for i in self.client.owner_ids]),
+                    "embeds": [
+                        {
+                            "title": "⚠️ There was an error caching the updates channel, unloading extension.",
+                            "color": 15548997,
+                            "timestamp": discord.utils.utcnow().isoformat(),
+                            "description": f"```\n{traceback.format_exc()}\n```",
+                        }
+                    ],
+                },
+            ) as response:
                 if response.status == 200:
-                    return await self.client.unload_extension("imports.extensions.GPlayScraper")
+                    return await self.client.unload_extension(
+                        "imports.extensions.GPlayScraper"
+                    )
                 else:
-                    self.client.logger.error("There was a problem while caching the updates channel. Unloading GPlayScraper...", exc_info=1)
-                    return await self.client.unload_extension("imports.extensions.GPlayScraper")
+                    self.client.logger.error(
+                        "There was a problem while caching the updates channel. Unloading GPlayScraper...",
+                        exc_info=1,
+                    )
+                    return await self.client.unload_extension(
+                        "imports.extensions.GPlayScraper"
+                    )
         else:
             self.ouichannel = True
         if not api:
