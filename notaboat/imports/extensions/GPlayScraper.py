@@ -33,6 +33,45 @@ class GPlayScraper(commands.Cog):
         self.lechannel = self.client.get_channel(1012472180119974069)
 
     async def cog_load(self) -> None:
+        try:
+            await self.lechannel.send(
+                embed=discord.Embed(
+                    description=f"ℹ️ Module `{self.__class__.__name__}` has been initiated.",
+                    color=3092791,
+                    timestamp=discord.utils.utcnow(),
+                )
+            )
+        except Exception:
+            self.ouichannel = False
+            async with self.client.httpsession.post(
+                "https://discord.com/api/v10/channels/1012472180119974069/messages",
+                headers={"Authorization": f"Bot {os.environ['BOAT_TOKEN']}"},
+                json={
+                    "content": " ".join([f"<@{i}>" for i in self.client.owner_ids]),
+                    "embeds": [
+                        {
+                            "title": "⚠️ There was an error caching the updates channel, unloading extension.",
+                            "color": 15548997,
+                            "timestamp": discord.utils.utcnow().isoformat(),
+                            "description": f"```\n{traceback.format_exc()}\n```",
+                        }
+                    ],
+                },
+            ) as response:
+                if response.status == 200:
+                    return await self.client.unload_extension(
+                        "imports.extensions.GPlayScraper"
+                    )
+                else:
+                    self.client.logger.error(
+                        "There was a problem while caching the updates channel. Unloading GPlayScraper...",
+                        exc_info=1,
+                    )
+                    return await self.client.unload_extension(
+                        "imports.extensions.GPlayScraper"
+                    )
+        else:
+            self.ouichannel = True
         if not api:
             self.client.logger.warning(
                 "There was an error while logging in to the Play API."
@@ -41,7 +80,7 @@ class GPlayScraper(commands.Cog):
                 timestamp=discord.utils.utcnow(),
                 color=0xED4245,
                 title="⚠️ Aborting loop start. There were errors while logging in to the Play API:",
-                description=f"```{err}\n```",
+                description=f"```\n{err}\n```",
             )
             embedd.set_footer(
                 text="Alpha Update Notifications",
@@ -61,8 +100,9 @@ class GPlayScraper(commands.Cog):
         self.discordverscraper.start()
 
     async def cog_unload(self) -> None:
-        if api:
-            self.discordverscraper.cancel()
+        if self.ouichannel:
+            if api:
+                self.discordverscraper.cancel()
 
     @tasks.loop(minutes=2)
     async def discordverscraper(self) -> None:
@@ -73,7 +113,7 @@ class GPlayScraper(commands.Cog):
                 timestamp=discord.utils.utcnow(),
                 color=0xED4245,
                 title="⚠️ Stopping loop. There were errors while fetching app details:",
-                description=f"```{traceback.format_exc()}\n```",
+                description=f"```\n{traceback.format_exc()}\n```",
             )
             embedd.set_footer(
                 text="Alpha Update Notifications",

@@ -5,6 +5,7 @@ from time import perf_counter
 
 import discord
 import firebase_admin
+from aiohttp import ClientSession
 from discord import app_commands
 from discord.ext import commands
 from firebase_admin import credentials, firestore_async
@@ -37,6 +38,7 @@ class SomeBot(commands.Bot):
             ),
             allowed_mentions=discord.AllowedMentions(everyone=False, roles=False),
         )
+        self.initiated = False
         self.logger = setuplogger("BoatBot", 10)
         self.dbapp = firebase_admin.initialize_app(
             credentials.Certificate(json.loads(os.environ["FDBCREDS"]))
@@ -45,7 +47,12 @@ class SomeBot(commands.Bot):
         self.logger.debug("Initialised Firestore Async Client.")
 
     async def on_ready(self) -> None:
-        self.start_time = discord.utils.utcnow()
+        if not self.initiated:
+            self.start_time = discord.utils.utcnow()
+            # Prevent gateway disconnect in case extensions make API calls.
+            await asyncio.sleep(2)
+            await load_on_start(self)
+            self.initiated = True
         self.logger.info("Gateway connection is ready.")
         self.logger.info("Logged in as %s - %s", self.user, self.user.id)
 
@@ -66,7 +73,6 @@ class SomeBot(commands.Bot):
             "Cached %s extensions from configured Firestore document.",
             len(self.extcache),
         )
-        await load_on_start(self)
 
 
 client = SomeBot()
@@ -311,8 +317,10 @@ async def load_on_start(client: commands.Bot) -> None:
 
 
 async def main() -> None:
-    async with client:
-        await client.start(os.environ["BOAT_TOKEN"])
+    async with ClientSession() as session:
+        async with client:
+            client.httpsession = session
+            await client.start(os.environ["BOAT_TOKEN"])
 
 
 asyncio.run(main())
