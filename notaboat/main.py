@@ -5,6 +5,7 @@ from time import perf_counter
 
 import discord
 import firebase_admin
+from aiohttp import ClientSession
 from discord import app_commands
 from discord.ext import commands
 from firebase_admin import credentials, firestore_async
@@ -311,8 +312,10 @@ async def load_on_start(client: commands.Bot) -> None:
 
 
 async def main() -> None:
-    async with client:
-        await client.start(os.environ["BOAT_TOKEN"])
+    async with ClientSession() as session:
+        async with client:
+            client.httpsession = session
+            await client.start(os.environ["BOAT_TOKEN"])
 
 
 asyncio.run(main())
