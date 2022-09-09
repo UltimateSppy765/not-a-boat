@@ -2,4 +2,5 @@ cryptography
 discord.py[speed]
 firebase-admin
 google-cloud-dialogflow
+rapidfuzz
 requests==2.23.0
