@@ -1,5 +1,5 @@
+cryptography
 discord.py[speed]
+firebase-admin
 google-cloud-dialogflow
 requests==2.23.0
-cryptography
-firebase-admin
