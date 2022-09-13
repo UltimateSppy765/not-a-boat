@@ -31,6 +31,7 @@ class GPlayScraper(commands.Cog):
     def __init__(self, client: commands.Bot) -> None:
         self.client = client
         self.lechannel = self.client.get_channel(1012472180119974069)
+        self.lechannel2 = self.client.get_channel(874536637051338772)
 
     async def cog_load(self) -> None:
         try:
@@ -150,6 +151,12 @@ class GPlayScraper(commands.Cog):
                     view=self.redirectview,
                     allowed_mentions=discord.AllowedMentions(roles=True),
                 )
+                msg2 = await self.lechannel2.send(
+                    content="<@&1019276807264018444> New Discord version out on Play Store!",
+                    embed=embedd,
+                    view=self.redirectview,
+                    allowed_mentions=discord.AllowedMentions(roles=True),
+                )
                 await self.client.dbclient.collection("stuff").document("version").set(
                     {
                         "lastdiscordver": appdetails["details"]["appDetails"][
@@ -158,6 +165,10 @@ class GPlayScraper(commands.Cog):
                     }
                 )
                 await msg.create_thread(
+                    name=f"Discord {appdetails['details']['appDetails']['versionString']}",
+                    reason=f"Android Discord Update ({appdetails['details']['appDetails']['versionCode']}) Thread",
+                )
+                await msg2.create_thread(
                     name=f"Discord {appdetails['details']['appDetails']['versionString']}",
                     reason=f"Android Discord Update ({appdetails['details']['appDetails']['versionCode']}) Thread",
                 )
