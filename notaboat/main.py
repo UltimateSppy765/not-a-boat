@@ -21,7 +21,7 @@ intents.message_content = True
 intents.messages = True
 
 # Setup logging (Native discord.py logging)
-discord.utils.setup_logging(root=False)
+discord.utils.setup_logging(root=False, level=20)
 
 
 # Subclass commands.Bot to allow for stuff like persistent views
