@@ -36,7 +36,7 @@ class SomeCog(commands.GroupCog, group_name="toggle"):
     @android_updates_role.error
     async def andoot_role_error(
         self, interaction: discord.Interaction, error: app_commands.AppCommandError
-    ):
+    ) -> None:
         if isinstance(error, app_commands.CommandOnCooldown):
             return await interaction.response.send_message(
                 content=(
