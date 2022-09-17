@@ -144,15 +144,19 @@ class GPlayScraper(commands.Cog):
             embedd.add_field(
                 name="Last Version Code Stored:", value=str(self.lastdiscordver)
             )
-            if appdetails["details"]["appDetails"]["versionCode"] > self.lastdiscordver:
+            if appdetails["details"]["appDetails"]["versionCode"] != self.lastdiscordver:
                 msg = await self.lechannel.send(
-                    content="<@&1012474340345917440> New Discord version out on Play Store!",
+                    content="<@&1012474340345917440> Discord version has changed on Play Store!",
                     embed=embedd,
                     view=self.redirectview,
                     allowed_mentions=discord.AllowedMentions(roles=True),
                 )
                 msg2 = await self.lechannel2.send(
-                    content="<@&1019276807264018444> New Discord version out on Play Store!",
+                    content=(
+                        "<@&1019276807264018444> Discord version has changed on Play Store!\n"
+                        "If you want to get notified for these, toggle the role for yourself using "
+                        "</toggle andoot-updates:1020379419082236044>."
+                    ),
                     embed=embedd,
                     view=self.redirectview,
                     allowed_mentions=discord.AllowedMentions(roles=True),
