@@ -17,13 +17,12 @@ class ActivityInvite(commands.Cog):
         self,
         interaction: discord.Interaction,
         channel: discord.VoiceChannel,
-        activity: discord.Object,
+        activity: str,
     ) -> None:
+        inv = await channel.create_invite(target_application_id=int(activity),target_type=discord.InviteTarget.embedded_application)
         await interaction.response.send_message(
-            f"**Channel:** {channel.mention}\n**Activity ID:** {activity.id}",
-            ephemeral=True,
+            f"✅ Ok!\n{inv.url}",
         )
-        return
 
 
 async def setup(client: commands.Bot) -> None:
